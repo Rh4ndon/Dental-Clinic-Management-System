@@ -20,14 +20,16 @@ const sharedCardStyles = {
 };
 const ClientHome = () => {
   
-  const { user, isLoading , refreshUser} = useContext(GlobalContext) // Access the context
+  const { user, isLoading , refreshUser, refreshDentist, refreshAppointments} = useContext(GlobalContext) // Access the context
 
   if (isLoading) {
     return <SafeAreaView style={styles.container}><Text>Loading...</Text></SafeAreaView>;
   }
 
   if (!user) {
-    refreshUser(); // Call rehydrate to fetch user data again
+    refreshUser();
+    refreshDentist();
+    refreshAppointments();
     return null; 
   }
 
@@ -35,10 +37,10 @@ const ClientHome = () => {
     
 
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Welcome, {user.name}, to XYZ Dental Clinic</Text>
+      <Text style={styles.title}>Welcome {user.name} to BrightBite Dental Clinic</Text>
       <Text style={styles.subtitle}>Your smile is our priority!</Text>
       <Image
-        source={require('@/assets/images/partial-react-logo.png')}
+        source={require('@/assets/images/logo.png')}
         style={styles.image}
       />
       <View style={styles.cardsContainer}>
@@ -102,6 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    textAlign: 'center',
   },
 
   subtitle: {

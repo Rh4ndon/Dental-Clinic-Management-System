@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Dimensions, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../../components/CustomButton';
 import FormField from '../../components/FormField';
@@ -7,7 +7,6 @@ import { Link, router, Redirect } from 'expo-router';
 import * as Request from '../../lib/PhpRequest';
 import { GlobalContext } from '../../context/GlobalProvider';
 
-import { Alert } from 'react-native';
 
 const SignIn = () => {
 
@@ -24,7 +23,7 @@ const SignIn = () => {
   }
  
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +36,7 @@ const SignIn = () => {
       if (isSubmitting) return;
       setIsSubmitting(true);
       // Check that the user has input all the required details
-      if (!username || !password ) {
+      if (!email || !password ) {
           
         if (Platform.OS === 'web') {
           alert('Please fill in all the details');
@@ -50,14 +49,14 @@ const SignIn = () => {
 
       // Create a JSON payload for the PHP API
       const userData = {
-          username,
+          email,
           password,
       };
 
       // Make a POST request to your PHP API
       try {
-
-        await Request.signIn ({ userData });
+      
+        const result = await Request.signIn ({ userData });
         
         
         setIsSubmitting(false);
@@ -76,14 +75,18 @@ const SignIn = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.logo}>Logo</Text>
+      <Image
+        source={require('../../assets/images/logo.png')}
+        style={{width: 150, height: 150, resizeMode: 'contain'}}
+      />
 
     
       <FormField 
-        title="Username"
-        placeholder="Username"
-        value={username}
-        handleChangeText={(text) => setUsername(text)}      
+        title="Email"
+        placeholder="Email"
+        value={email}
+        handleChangeText={(text) => setEmail(text)}
+        keyboardType="email-address"      
       />
 
       <FormField 

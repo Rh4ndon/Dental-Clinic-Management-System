@@ -48,11 +48,12 @@ const Index = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/logo.png')}
           style={[styles.mb8, { width: '100%', height: 200, resizeMode: 'contain' }]}
         />
         <Text className="font-pblack" style={[styles.h1, styles.mb4]}>
-          Welcome to Our Dental Clinic 👋
+          {"\n"}
+          Welcome to BrightBite Dental Clinic 👋
         </Text>
         <Text style={[styles.p, styles.textCenter, styles.mb2, { paddingHorizontal: 16 }]}>
           {"\n"}

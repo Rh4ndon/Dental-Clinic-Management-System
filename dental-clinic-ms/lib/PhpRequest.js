@@ -51,11 +51,21 @@ export const signIn = async ({ userData }) => {
     body: JSON.stringify(userData),
   });
 
+
+
   if (response.ok) {
     const responseText = await response.text();
     const jsonData = responseText.replace(/<!--.*?-->/g, '');
     const responseData = JSON.parse(jsonData);
 
+    if (responseData.success === false) {
+      if (Platform.OS === 'web') {
+        alert(responseData.error);
+      } else {
+        Alert.alert(responseData.error);
+      }
+      return;
+    }
     
     if (Platform.OS === 'web') {
       // Use localStorage for web
@@ -87,10 +97,10 @@ export const signIn = async ({ userData }) => {
   }
 };
 
-export const getData = async () => {
+export const getDentists = async () => {
   try {
     const apiUrl = config.API_URL;
-    const response = await fetch(`${apiUrl}/get-current-user.php`, {
+    const response = await fetch(`${apiUrl}/get-dentist.php`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -98,11 +108,95 @@ export const getData = async () => {
     });
     const responseText = await response.text();
     const jsonData = responseText.replace(/<!--.*?-->/g, '');
-    return JSON.parse(jsonData);
+    const responseData = JSON.parse(jsonData);
+  
+    if (responseData.success === false) {
+      if (Platform.OS === 'web') {
+        alert(responseData.error);
+      } else {
+        Alert.alert(responseData.error);
+      }
+      return;
+    }
+      
+    if (Platform.OS === 'web') {
+      // Use localStorage for web
+      localStorage.setItem('dentist', JSON.stringify(responseData.data));
+    } else {
+      // Use AsyncStorage for mobile
+      await AsyncStorage.setItem('dentist', JSON.stringify(responseData.data));
+    }
   } catch (error) {
     console.log(error);
   }
 };
 
+export const getAppointments = async ({userID}) => {
+
+  try {
+    const apiUrl = config.API_URL;
+    const response = await fetch(`${apiUrl}/get-appointment.php?user_id=${userID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const responseText = await response.text();
+    const jsonData = responseText.replace(/<!--.*?-->/g, '');
+    const responseData = JSON.parse(jsonData);
+
+    if (responseData.success !== false) {
+      if (Platform.OS === 'web') {
+        // Use localStorage for web
+        localStorage.setItem('appointments', JSON.stringify(responseData.data));
+      } else {
+        // Use AsyncStorage for mobile
+        await AsyncStorage.setItem('appointments', JSON.stringify(responseData.data));
+      }
+      
+
+  
+    }else{  
+      console.log(responseData.error);
+    }
+
+
+  } catch (error) {
+    console.log('getAppointments error:', error);
+  }
+};
+
+
+export const createAppointment = async ({ appointmentData  }) => {
+  const apiUrl = config.API_URL;
+
+  // Make a POST request to your PHP API
+  const response = await fetch(`${apiUrl}/create-appointment.php`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(appointmentData),
+  });
+
+  // Check if the response was successful
+  if (response.ok) {
+    console.log(`Appointment submitted successful!`);
+    if (Platform.OS === 'web') {
+      alert(`Appointment submitted Successful`);
+    } else {
+      Alert.alert(`Appointment submitted Successful`);
+    }
+
+  } else {
+    console.error(`Appointment submission failed:`, response.status);
+    // Alerts
+    if (Platform.OS === 'web') {
+      alert(`Appointment submission Failed Please try again later.`);
+    } else {
+      Alert.alert(`Appointment submission Failed`, 'Please try again later.');
+    }
+  }
+};
 
 

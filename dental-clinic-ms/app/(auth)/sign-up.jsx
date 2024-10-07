@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '../../components/CustomButton';
 import FormField from '../../components/FormField';
@@ -10,10 +10,10 @@ import * as Request from '../../lib/PhpRequest';
 const SignUp = () => {
 
 
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +26,7 @@ const SignUp = () => {
       setIsSubmitting(true);
 
       // Check that the user has input all the required details
-      if (!username || !password || !name || !email || !address) {
+      if ( !password || !name || !email || !phone || !address) {
           
           if (Platform.OS === 'web') {
             alert('Please fill in all the details');
@@ -39,9 +39,10 @@ const SignUp = () => {
 
       // Create a JSON payload for the PHP API
       const userData = {
-          username,
+        
           password,
           name,
+          phone,
           email,
           address,
       };
@@ -67,7 +68,10 @@ const SignUp = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.logo}>Logo</Text>
+       <Image
+        source={require('../../assets/images/logo.png')}
+        style={{width: 150, height: 150, resizeMode: 'contain'}}
+      />
 
       <FormField 
         title="Name"
@@ -85,20 +89,21 @@ const SignUp = () => {
       />
 
       <FormField 
+        title="Phone"
+        placeholder="Phone"
+        value={phone}
+        handleChangeText={(text) => setPhone(text)}   
+        keyboardType="numeric"   
+      />
+
+      <FormField 
         title="Address"
         placeholder="Address"
         value={address}
         handleChangeText={(text) => setAddress(text)}      
       />
     
-      <FormField 
-        title="Username"
-        placeholder="Username"
-        value={username}
-        handleChangeText={(text) => setUsername(text)}      
-      />
-      
-
+   
       <FormField 
         title="Password"
         placeholder="Password"

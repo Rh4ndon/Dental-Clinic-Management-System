@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, } from 'react-nati
 import React,  { useState } from 'react'
 import { MaterialIcons } from '@expo/vector-icons';
 
-const FormField = ({title, value, placeholder, handleChangeText, otherStyles, ...props}) => {
+const FormField = ({title, value, placeholder, handleChangeText, otherStyles, keyboardType, ...props}) => {
     const [secureTextEntry, setSecureTextEntry] = useState(true);
   return (
     <View style={styles.inputContainer}>
@@ -11,6 +11,7 @@ const FormField = ({title, value, placeholder, handleChangeText, otherStyles, ..
       placeholder={placeholder}
       value={value}
       onChangeText={handleChangeText}
+      keyboardType={keyboardType}
       secureTextEntry = {title === 'Password' && secureTextEntry}
     />
     {title === 'Password' && (
