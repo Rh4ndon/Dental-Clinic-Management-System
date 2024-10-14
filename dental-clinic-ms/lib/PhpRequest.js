@@ -52,7 +52,7 @@ export const signIn = async ({ userData }) => {
   });
 
 
-
+  //console.log(response);
   if (response.ok) {
     const responseText = await response.text();
     const jsonData = responseText.replace(/<!--.*?-->/g, '');
@@ -179,13 +179,17 @@ export const createAppointment = async ({ appointmentData  }) => {
     body: JSON.stringify(appointmentData),
   });
 
-  // Check if the response was successful
+  // Extract the JSON data
+  const responseText = await response.text();
+  const jsonData = responseText.replace(/<!--.*?-->/g, '');
+  const responseData = JSON.parse(jsonData);
+
   if (response.ok) {
-    console.log(`Appointment submitted successful!`);
+  
     if (Platform.OS === 'web') {
-      alert(`Appointment submitted Successful`);
+      alert(responseData.message);
     } else {
-      Alert.alert(`Appointment submitted Successful`);
+      Alert.alert(responseData.message);
     }
 
   } else {
