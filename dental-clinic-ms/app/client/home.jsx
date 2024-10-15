@@ -79,10 +79,9 @@ const ContactCard = () => {
     <View style={sharedCardStyles}>
       <Text style={styles.cardTitle}>Contact Us</Text>
       <View>
-        <Text style={styles.cardItem}>123 Dental Street</Text>
-        <Text style={styles.cardItem}>City, Country</Text>
-        <Text style={styles.cardItem}>contact@xyzdentalclinic.com</Text>
-        <Text style={styles.cardItem}>555-123-4567</Text>
+        <Text style={styles.cardItem}>Centro, Cabatuan Isabela</Text>
+        <Text style={styles.cardItem}>Doc. Dennis Balingue</Text>
+        <Text style={styles.cardItem}>09269485448</Text>
       </View>
     </View>
 

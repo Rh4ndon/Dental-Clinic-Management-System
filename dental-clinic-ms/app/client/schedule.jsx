@@ -171,7 +171,7 @@ const schedule = () => {
             <Picker.Item key={9} label="5:00 PM" value="5:00 PM" />
           </Picker>
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-            <Text style={{width: 200, height: 50, alignSelf: 'center', textAlign: 'center', textAlignVertical: 'center', fontSize: 16, color: '#333'}}>
+            <Text style={{width: 100, height: 50, alignSelf: 'center', textAlign: 'center', textAlignVertical: 'center', fontSize: 16, color: '#333'}}>
               {selectedDate ? (new Date(selectedDate)).toLocaleDateString('en-US', {year: 'numeric', month: '2-digit', day: '2-digit'}) : 'Select Date'}
             </Text>
           </TouchableOpacity>
