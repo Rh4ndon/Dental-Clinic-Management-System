@@ -4,7 +4,38 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Request from '../../lib/PhpRequest';
 import { Picker } from '@react-native-picker/picker';
+import * as Notifications from 'expo-notifications'; 
 
+
+
+
+
+/*
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    };
+  },
+});
+
+const sendNotification = async () => {
+  const identifier = await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Test notification',
+      body: 'This is a test notification',
+    },
+    trigger: null,
+  });
+  console.log('Notification scheduled with identifier:', identifier);
+};
+
+sendNotification();
+
+*/
 
 const schedule = () => {
 
@@ -17,13 +48,22 @@ const schedule = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
  
-  
+
+
 
 
   useEffect(() => {
     setData(appointments);
-  }, [appointments]);
 
+    requestPermissions();
+    if (appointments.status !== '0') {
+      appointments.forEach(appointment => {
+        scheduleNotification(appointment.date, appointment.time);
+      });
+      
+    }
+   
+  }, [appointments]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -31,6 +71,102 @@ const schedule = () => {
     refreshUser();
     refreshAppointments().finally(() => setRefreshing(false));
   }, [refreshAppointments]);
+
+
+
+  const scheduleNotification = async (date, time) => {
+    const [month, day, year] = date.split('/');
+    const [timePart, meridiem] = time.split(' '); // Split time and meridiem
+    const [hour, minute] = timePart.split(':');
+  
+    // Convert hour to 24-hour format
+    let adjustedHour = parseInt(hour, 10);
+    if (meridiem === 'PM' && adjustedHour < 12) {
+      adjustedHour += 12; // Convert PM hour to 24-hour format
+    } else if (meridiem === 'AM' && adjustedHour === 12) {
+      adjustedHour = 0; // Convert 12 AM to 0 hours
+    }
+  
+    // Create the appointment date in local time
+    const appointmentDateTime = new Date(year, month - 1, day, adjustedHour, minute, 0); // Month is 0-indexed
+  
+    // Calculate the time difference in seconds from now until the appointment
+    const now = new Date();
+    let timeDifference = (appointmentDateTime.getTime() - now.getTime()) / 1000; // Convert milliseconds to seconds
+  
+    // Check if the appointment is in the future
+    if (timeDifference <= 0) {
+      // Alert.alert('Appointment Done', 'The appointment has already passed.');
+      return; // Exit the function if the appointment is not in the future
+    }
+  
+    // Calculate the notification time
+    let notificationTime = timeDifference - 3600; // Subtract 1 hour (3600 seconds)
+  
+    // Ensure the notification time is not negative
+    if (notificationTime < 0) {
+      notificationTime = 0; // Set the notification time to 0 if it's negative
+    }
+    // Ensure the notification is scheduled for a future time
+    if (notificationTime >= 0) {
+      const options = { timeZone: 'Asia/Manila', year: 'numeric', month: 'numeric', day: 'numeric' };
+      const formattedDateTime = appointmentDateTime.toLocaleString('en-US', options);
+  
+      // Schedule the initial notification
+      const sendInitialNotification = async () => {
+        const identifier = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Upcoming Dentist Appointment',
+            body: `You have an appointment scheduled on ${formattedDateTime} at ${time}`,
+            data: { appointmentId: user.id },
+          },
+          trigger: null,
+        });
+        // console.log('Initial notification scheduled with identifier:', identifier);
+      };
+  
+      sendInitialNotification();
+  
+      // Calculate the intervals for the notifications (every 10 minutes)
+      const intervals = [];
+      for (let i = 10; i <= 60; i += 10) {
+        const interval = timeDifference - (i * 60); // Calculate the time for each interval
+        if (interval >= 0) {
+          intervals.push(interval); // Only add non-negative intervals
+        }
+      }
+  
+      console.log('Intervals:', intervals);
+  
+      intervals.forEach((interval) => {
+        // Schedule the notifications for each interval
+        const sendNotification = async () => {
+          const identifier = await Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Upcoming Dentist Appointment',
+              body: `You have an appointment scheduled on ${formattedDateTime} at ${time}`,
+              data: { appointmentId: user.id },
+            },
+            trigger: {
+              seconds: interval, // Schedule for the calculated interval
+            },
+          });
+          // console.log('Notification scheduled with identifier:', identifier);
+        };
+  
+        sendNotification();
+      });
+    }
+  };
+
+  const requestPermissions = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission not granted', 'You need to enable notifications for this app to work properly.');
+    }
+  };
+
+
 
 
   const renderItem = ({ item }) => {
@@ -61,7 +197,7 @@ const schedule = () => {
     return null;
   };
 
-
+ 
   const handleDateChange = (date) => {
     setSelectedDate(date);
 
@@ -125,6 +261,7 @@ const schedule = () => {
    
   };
 
+  
 
   return (
 
