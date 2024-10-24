@@ -225,7 +225,6 @@ const GlobalProvider = ({ children }) => {
   const logout = async () => {
     setUser(null);
     setAppointments(null);
-    setDentist(null);
     setCode(null);
     setIsLoggedIn(false);
     try {

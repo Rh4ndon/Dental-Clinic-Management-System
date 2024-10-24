@@ -9,34 +9,6 @@ import * as Notifications from 'expo-notifications';
 
 
 
-
-/*
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => {
-    return {
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-    };
-  },
-});
-
-const sendNotification = async () => {
-  const identifier = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Test notification',
-      body: 'This is a test notification',
-    },
-    trigger: null,
-  });
-  console.log('Notification scheduled with identifier:', identifier);
-};
-
-sendNotification();
-
-*/
-
 const schedule = () => {
 
   const { appointments, user, isLoading, dentist, refreshUser, refreshDentist, refreshAppointments } = useContext(GlobalContext);
@@ -48,7 +20,9 @@ const schedule = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
  
-
+  if(!dentist){
+    refreshDentist();
+  }
 
   useEffect(() => {
     setData(appointments);
