@@ -69,19 +69,15 @@ export const signIn = async ({ userData }) => {
     
     if (Platform.OS === 'web') {
       // Use localStorage for web
-      localStorage.setItem('user', JSON.stringify(responseData));
+      localStorage.setItem('code', JSON.stringify(responseData));
     } else {
       // Use AsyncStorage for mobile
-      await AsyncStorage.setItem('user', JSON.stringify(responseData));
+      await AsyncStorage.setItem('code', JSON.stringify(responseData));
     }
   
-    if (responseData.role === 'client') {
-      router.push('../client/home');
-    } else if (responseData.role === 'doctor') {
-      router.push('../doctor/home');
-    } else if (responseData.role === 'admin') {
-      router.push('../admin/admin_dash');
-    }
+    //console.log(responseData);
+    router.push('../(auth)/confirm');
+  
 
     if (Platform.OS === 'web') {
       alert('Sign-in Successful');

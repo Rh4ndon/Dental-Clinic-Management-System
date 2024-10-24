@@ -8,6 +8,7 @@ export const GlobalContext = createContext();
 const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [code, setCode] = useState(null);
   const [dentist, setDentist] = useState(null);
   const [appointments, setAppointments] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,6 +61,55 @@ const GlobalProvider = ({ children }) => {
   const refreshUser = async () => {
     await rehydrate();
   };
+
+  //For Code
+  const fetchCodeData = async () => {
+    try {
+      let storedCode;
+      if (Platform.OS === 'web') {
+        storedCode = localStorage.getItem('code');
+      } else {
+        storedCode = await AsyncStorage.getItem('code');
+      }
+      if (storedCode) {
+        const parsedCode = JSON.parse(storedCode);
+        return parsedCode;
+      }
+    } catch (error) {
+      console.error('Error fetching code data:', error);
+    }
+  };
+
+  const rehydrateCode = async () => {
+    const codeData = await fetchCodeData();
+    if (codeData) {
+      setCode(codeData);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    rehydrateCode();
+  }, []);
+
+  useEffect(() => {
+    if (code) {
+      try {
+        if (Platform.OS === 'web') {
+          localStorage.setItem('code', JSON.stringify(code));
+        } else {
+          AsyncStorage.setItem('code', JSON.stringify(code));
+        }
+      } catch (error) {
+        console.error('Error setting code:', error);
+      }
+    }
+  }, [code]);
+
+  const refreshCode = async () => {
+    await rehydrateCode();
+  };
+
 
   //For Dentist
   const fetchDentistData = async () => {
@@ -118,7 +168,7 @@ const GlobalProvider = ({ children }) => {
       return;
     }
     const userID = user.id;
-    getAppointments({userID});
+    const appointmentsData = await getAppointments({ userID });
 
 
  
@@ -172,32 +222,25 @@ const GlobalProvider = ({ children }) => {
     setIsLoggedIn(true);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
+    setAppointments(null);
+    setDentist(null);
+    setCode(null);
     setIsLoggedIn(false);
     try {
       if (Platform.OS === 'web') {
-        localStorage.removeItem('user');
+        localStorage.clear();
       } else {
-        AsyncStorage.removeItem('user');
-      }
-      if (Platform.OS === 'web') {
-        localStorage.removeItem('dentist');
-      } else {
-        AsyncStorage.removeItem('dentist');
-      }
-      if (Platform.OS === 'web') {
-        localStorage.removeItem('appointments');
-      } else {
-        AsyncStorage.removeItem('appointments');
+        await AsyncStorage.clear();
       }
     } catch (error) {
-      console.error('Error removing user, dentist and appointments:', error);
+      console.error('Error clearing storage:', error);
     }
   };
 
   return (
-    <GlobalContext.Provider value={{ isLoggedIn, user, dentist, appointments, isLoading, login, logout, refreshUser, refreshDentist, refreshAppointments }}>
+    <GlobalContext.Provider value={{ isLoggedIn, user, code, dentist, appointments, isLoading, login, logout, refreshUser, refreshDentist, refreshAppointments, refreshCode }}>
       {children}
     </GlobalContext.Provider>
   );

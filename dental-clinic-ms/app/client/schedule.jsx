@@ -50,17 +50,17 @@ const schedule = () => {
  
 
 
-
-
   useEffect(() => {
     setData(appointments);
 
     requestPermissions();
+    if (appointments && appointments.length > 0) {
     if (appointments.status !== '0') {
       appointments.forEach(appointment => {
         scheduleNotification(appointment.date, appointment.time);
       });
       
+    }
     }
    
   }, [appointments]);
@@ -136,7 +136,7 @@ const schedule = () => {
         }
       }
   
-      console.log('Intervals:', intervals);
+
   
       intervals.forEach((interval) => {
         // Schedule the notifications for each interval
