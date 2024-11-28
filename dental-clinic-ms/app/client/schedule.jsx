@@ -9,6 +9,32 @@ import * as Notifications from 'expo-notifications';
 
 
 
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    };
+  },
+});
+
+const sendNotification = async () => {
+  const identifier = await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Hello From BrightBite',
+      body: 'This app will notify you 1 hour before your appointment',
+    },
+    trigger: null,
+  });
+  //console.log('Notification scheduled with identifier:', identifier);
+};
+
+sendNotification();
+
+
+
 const schedule = () => {
 
   const { appointments, user, isLoading, dentist, refreshUser, refreshDentist, refreshAppointments } = useContext(GlobalContext);
@@ -28,6 +54,8 @@ const schedule = () => {
     setData(appointments);
 
     requestPermissions();
+
+
     if (appointments && appointments.length > 0) {
     if (appointments.status !== '0') {
       appointments.forEach(appointment => {
@@ -38,6 +66,9 @@ const schedule = () => {
     }
    
   }, [appointments]);
+  
+
+
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -125,7 +156,8 @@ const schedule = () => {
               seconds: interval, // Schedule for the calculated interval
             },
           });
-          // console.log('Notification scheduled with identifier:', identifier);
+          console.log(interval);
+          //console.log('Notification scheduled with identifier:', identifier);
         };
   
         sendNotification();

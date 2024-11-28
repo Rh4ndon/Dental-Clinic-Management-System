@@ -1,0 +1,4 @@
+<!-- Database connection API -->
+<?php
+$conn = mysqli_connect('localhost', 'u390160457_dentist', 'Brightbite_2024', 'u390160457_dental') or die(mysqli_error());
+?>

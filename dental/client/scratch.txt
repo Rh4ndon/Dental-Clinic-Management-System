@@ -1,0 +1,45 @@
+  const fetchDentistData = async () => {
+    try {
+      let storedDentist;
+      if (Platform.OS === 'web') {
+        storedDentist = localStorage.getItem('dentist');
+      } else {
+        storedDentist = await AsyncStorage.getItem('dentist');
+      }
+      if (storedDentist) {
+        const parsedDentist = JSON.parse(storedDentist);
+        return parsedDentist;
+      }
+    } catch (error) {
+      console.error('Error fetching dentist data:', error);
+    }
+  };
+
+  const rehydrateDentist = async () => {
+    const dentistData = await fetchDentistData();
+    if (dentistData) {
+      setDentist(dentistData);
+    }
+  };
+
+  useEffect(() => {
+    rehydrateDentist();
+  }, []);
+
+  useEffect(() => {
+    if (dentist) {
+      try {
+        if (Platform.OS === 'web') {
+          localStorage.setItem('dentist', JSON.stringify(dentist));
+        } else {
+          AsyncStorage.setItem('dentist', JSON.stringify(dentist));
+        }
+      } catch (error) {
+        console.error('Error setting dentist:', error);
+      }
+    }
+  }, [dentist]);
+
+  const refreshDentist = async () => {
+    await rehydrateDentist();
+  };
