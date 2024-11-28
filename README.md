@@ -87,4 +87,3 @@ Contributions are welcome! If you have any ideas or improvements, feel free to s
 For any questions or support, please reach out to me via email at daverhandon@gmail.com or connect with me on [LinkedIn](https://www.linkedin.com/in/dave-rhandon-blas-b670b1279) or [Facebook](https://www.facebook.com/people/Rhandon-Dave/100010657007416/).
 
 Thank you for checking out the Dental Clinic Management System!
-
