@@ -88,6 +88,3 @@ For any questions or support, please reach out to me via email at daverhandon@gm
 
 Thank you for checking out the Dental Clinic Management System!
 
-```
-
-```
